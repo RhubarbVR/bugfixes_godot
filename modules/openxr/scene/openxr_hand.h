@@ -43,7 +43,7 @@ class OpenXRHand : public Node3D {
 	GDCLASS(OpenXRHand, Node3D);
 
 public:
-	enum Hands {
+	enum Hands { // deprecated, need to change this to OpenXRInterface::Hands
 		HAND_LEFT,
 		HAND_RIGHT,
 		HAND_MAX

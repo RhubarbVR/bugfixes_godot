@@ -34,6 +34,8 @@
 #include "core/io/resource_saver.h"
 #include "servers/rendering/rendering_server_globals.h"
 
+#include "extensions/openxr_hand_tracking_extension.h"
+
 void OpenXRInterface::_bind_methods() {
 	// lifecycle signals
 	ADD_SIGNAL(MethodInfo("session_begun"));
@@ -57,6 +59,42 @@ void OpenXRInterface::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_action_sets"), &OpenXRInterface::get_action_sets);
 
 	ClassDB::bind_method(D_METHOD("get_available_display_refresh_rates"), &OpenXRInterface::get_available_display_refresh_rates);
+
+	// Hand tracking
+	ClassDB::bind_method(D_METHOD("get_hand_joint_locations", "hand"), &OpenXRInterface::get_hand_joint_locations);
+	ClassDB::bind_method(D_METHOD("get_hand_joint_velocities", "hand"), &OpenXRInterface::get_hand_joint_velocities);
+
+	BIND_ENUM_CONSTANT(HAND_LEFT);
+	BIND_ENUM_CONSTANT(HAND_RIGHT);
+	BIND_ENUM_CONSTANT(HAND_MAX);
+
+	BIND_ENUM_CONSTANT(HAND_JOINT_PALM);
+	BIND_ENUM_CONSTANT(HAND_JOINT_WRIST);
+	BIND_ENUM_CONSTANT(HAND_JOINT_THUMB_METACARPAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_THUMB_PROXIMAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_THUMB_DISTAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_THUMB_TIP);
+	BIND_ENUM_CONSTANT(HAND_JOINT_INDEX_METACARPAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_INDEX_PROXIMAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_INDEX_INTERMEDIATE);
+	BIND_ENUM_CONSTANT(HAND_JOINT_INDEX_DISTAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_INDEX_TIP);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MIDDLE_METACARPAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MIDDLE_PROXIMAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MIDDLE_INTERMEDIATE);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MIDDLE_DISTAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MIDDLE_TIP);
+	BIND_ENUM_CONSTANT(HAND_JOINT_RING_METACARPAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_RING_PROXIMAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_RING_INTERMEDIATE);
+	BIND_ENUM_CONSTANT(HAND_JOINT_RING_DISTAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_RING_TIP);
+	BIND_ENUM_CONSTANT(HAND_JOINT_LITTLE_METACARPAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_LITTLE_PROXIMAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_LITTLE_INTERMEDIATE);
+	BIND_ENUM_CONSTANT(HAND_JOINT_LITTLE_DISTAL);
+	BIND_ENUM_CONSTANT(HAND_JOINT_LITTLE_TIP);
+	BIND_ENUM_CONSTANT(HAND_JOINT_MAX);
 }
 
 StringName OpenXRInterface::get_name() const {
@@ -974,6 +1012,25 @@ void OpenXRInterface::on_state_stopping() {
 
 void OpenXRInterface::on_pose_recentered() {
 	emit_signal(SNAME("pose_recentered"));
+}
+
+/** Hand tracking. */
+Array OpenXRInterface::get_hand_joint_locations(Hand p_hand) {
+	OpenXRHandTrackingExtension *hand_tracking_ext = OpenXRHandTrackingExtension::get_singleton();
+	if (hand_tracking_ext && hand_tracking_ext->get_active()) {
+		return hand_tracking_ext->get_hand_joint_locations(uint32_t(p_hand));
+	}
+
+	return Array();
+}
+
+Array OpenXRInterface::get_hand_joint_velocities(Hand p_hand) {
+	OpenXRHandTrackingExtension *hand_tracking_ext = OpenXRHandTrackingExtension::get_singleton();
+	if (hand_tracking_ext && hand_tracking_ext->get_active()) {
+		return hand_tracking_ext->get_hand_joint_velocities(uint32_t(p_hand));
+	}
+
+	return Array();
 }
 
 OpenXRInterface::OpenXRInterface() {

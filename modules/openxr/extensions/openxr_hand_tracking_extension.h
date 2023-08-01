@@ -73,6 +73,9 @@ public:
 	XrHandJointsMotionRangeEXT get_motion_range(uint32_t p_hand) const;
 	void set_motion_range(uint32_t p_hand, XrHandJointsMotionRangeEXT p_motion_range);
 
+	Array get_hand_joint_locations(uint32_t p_hand);
+	Array get_hand_joint_velocities(uint32_t p_hand);
+
 private:
 	static OpenXRHandTrackingExtension *singleton;
 
